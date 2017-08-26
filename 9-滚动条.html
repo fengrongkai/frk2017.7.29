@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title></title>
+		<style>
+			#box {
+				width: 50px;
+				height: 500px;
+				border: 1px solid #000;
+				position: relative;
+			}
+			#bar {
+				width: 100%;
+				height: 50px;
+				position: absolute;
+				left: 0;
+				top: 0;
+				background: green;
+			}
+		</style>
+		<script>
+			window.onload = function (){
+				var box = document.getElementById("box");
+				var bar = document.getElementById("bar");
+				var max=box.clientHeight-bar.offsetHeight;
+				mousewheel(document,fns,fnx);   //调用滚动函数
+				
+				function fnx(){      //当滚轮向上滚动时，
+					var l=bar.offsetTop+10;
+					if(l>max) l=max;
+					bar.style.top =l+"px";
+				}
+				function fns(){     //当滚轮向下滚动时
+					var l=bar.offsetTop-10;
+					if(l<0){
+						l=0;
+					}
+					bar.style.top =l+"px";
+				}
+				bar.onmousedown = function (ev){   //点击滑块时
+					var dis = ev.clientY-bar.offsetTop;console.log(1)
+					document.onmousemove = function (ev){  //移动鼠标shi
+						var l=ev.clientY-dis;
+						if(l>max) l=max;
+						if(l<0) l=0;
+						bar.style.top=l+"px";
+					}
+					document.onmouseup = function (){   //释放鼠标时
+						document.onmousemove =box.onmouseup=null;
+					}
+				}
+				function mousewheel(element,upFn,downFn){   //封装的滚动函数
+				element.onmousewheel = fn;
+				if(element.addEventListener){
+					element.addEventListener("DOMMouseScroll",fn);
+				}
+
+				function fn(ev){
+					var e = ev || event;
+					var direction = true;  // 上
+
+					if(e.wheelDelta){
+						direction = e.wheelDelta > 0 ? true : false;
+					}
+					if(e.detail){
+						direction = e.detail < 0 ? true : false;
+					}
+
+					// 统一方向
+
+					if(direction){
+						// 当执行这个回调函数的时候，把事件对象作为参数传给这个函数
+						upFn(e);
+					}else{
+						downFn(e);
+					}
+
+				};	
+			}
+			}
+		</script>
+	</head>
+
+	<body>
+		<div id="box">
+			<div id="bar"></div>
+		</div>
+		<script>
+			
+		</script>
+	</body>
+</html>
