@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        td {
+            text-align: center;
+        }
+        .red{
+            background: red;
+        }
+        .color{
+            background-image: linear-gradient(135deg, #41c8ff 0, #41c8ff 25%,#46e6fe 75%);
+        }
+    </style>
+    <script>
+
+        //在页面加载完成的时候，把下面这个数据动态添加到表格中
+        var data = [
+            {
+                 'id' : 1,
+                'username' : 'LEO',
+                'age' : 36,
+                'sex' : '男'
+            },
+            {
+                'id' : 2,
+                'username' : 'MOMO',
+                'age' : 16,
+                'sex' : '男'
+            },
+            {
+                'id' : 3,
+                'username' : 'DUODUO',
+                'age' : 29,
+                'sex' : '男'
+            },
+            {
+                'id' : 4,
+                'username' : '勇升',
+                'age' : 46,
+                'sex' : '男'
+            },
+            {
+                'id' : 5,
+                'username' : '小美',
+                'age' : 40,
+                'sex' : '女'
+            }
+        ];
+
+        /*
+            1、根据数据生成表格。
+            2、数据的添加
+            3、全选、单选
+            4、单条删除，选中删除
+            5、排序（按年龄从大到小-从小到大）
+            6、如果是在排序的状态，添加后依然保持排序
+        */
+    </script>
+    <script src="./utils.js"></script>
+    <script>
+    	window.onload = function (){
+    		var userName = $("#userName");
+    		var age = $("#age");
+    		var sex = $("#sex");
+    		var add = $("#add");
+    		var delAll = $("#delectAll");
+    		var ageSort = $("#ageSort");
+    		var tbody = $("tbody")[0];
+    		var checkAll = $("#checkAll")
+    		var id=0;
+    		var arr2=[];
+    		add.onclick = function (){  //添加新的项
+    			id++;
+    			arr2=[];
+    			var input=$("tbody input");
+    			for(var i=0;i<input.length;i++){
+    				if(input[i].checked){
+    					arr2.push(i);
+    				}
+    			}
+    			tbody.innerHTML+=`<tr>
+                <td>
+                    <input type="checkbox"/>
+                </td>
+                <td>${id}</td>
+                <td>${userName.value}</td>
+                <td>${age.value}</td>
+                <td>${sex.value}</td>
+                <td>
+                    <a href="javascript:;">删除</a>
+                </td>
+            </tr>`;
+            var input=$("tbody input");
+            for(var i=0;i<arr2.length;i++){
+            	input[arr2[i]].checked=true;
+            }
+             red(); //重新渲染颜色
+             check();//检测是否全选
+            }
+    		tbody.onclick = function (ev){  //点击删除链接，删除对应的项
+            	if(ev.target.nodeName=="A"){
+            		ev.target.parentNode.parentNode.remove();
+            	}
+            	red();  //重新渲染颜色
+            	check(); //检测是否全选
+            }
+    		ageSort.onclick = function (){  //对年龄进行从小到大的排序
+    			 var trs=$("tbody tr");
+    			var arr=Array.from(trs).sort(function (a,b){
+    				return a.children[3].innerHTML-b.children[3].innerHTML
+    			});
+    			arr2=[];
+    			var input=$("tbody input");
+    			for(var i=0;i<input.length;i++){
+    				if(input[i].checked){
+    					arr2.push(arr.indexOf(input[i].parentNode.parentNode));
+    				}
+    			}
+    			var str="";
+    			for(var i=0;i<arr.length;i++){
+    				str+="<tr>"+arr[i].innerHTML+"</tr>";
+    			}
+    			console.log(str)
+    			tbody.innerHTML=str;
+    			var input=$("tbody input");
+            for(var i=0;i<arr2.length;i++){
+            	input[arr2[i]].checked=true;
+            }
+    			red();
+    			check();
+    		}
+    		delAll.onclick = function (){   //删除所有被选中的项
+    			var input = $("tbody input");
+    			for(var i=0;i<input.length;i++){
+    				if(input[i].checked==true){
+    					input[i].parentNode.parentNode.remove();
+    				}
+    			}
+    			check();
+    			red();
+    		}
+    		checkAll.onclick = function (){  //点击全选，选中所有项或者取消所有想被选中的状态
+    			var input = $("tbody input");
+    			if(input.length){
+    				checkAll.disabled=false;
+    			}
+    			if(checkAll.checked){
+    				for(var i=0;i<input.length;i++){
+    				input[i].checked = true;
+    			}
+    			}else{
+    				for(var i=0;i<input.length;i++){
+    				input[i].checked = false;
+    			}
+    			}
+    			
+    		}
+    		function check(){   //检测是否全选
+    			var input = $("tbody input");
+    			if(!input.length){
+    					checkAll.checked=false;
+    					checkAll.disabled=true;
+    					return;
+    			}else{
+    				checkAll.disabled=false;
+    			}
+    			checkAll.checked=true;
+    			for(var i=0;i<input.length;i++){
+    				if(input[i].checked == false){
+    					checkAll.checked=false;
+    					return;
+    				}
+    			}
+    		}
+    		function red(){  //渲染颜色
+    		 var trs=$("tbody tr");
+    		for(var i=0;i<trs.length;i++){
+             	if(i%2==0){
+             			trs[i].className="red";
+             	}else{
+             			trs[i].className="";
+             	}
+             }
+    		}
+    	}
+    </script>
+</head>
+
+<body>
+
+<form action="" name="form">
+    <p>
+        姓名:<input type="text" id="userName" name="username"/>
+    </p>
+    <p>
+        年龄:<input type="text" id="age" name="age"/>
+    </p>
+    <p>
+        性别: <select name="sex" id="sex">
+            <option value=" 男 ">男</option>
+            <option value="女">女</option>
+        </select>
+    </p>
+    <p>
+        <input type="button" id="add" value="添加" name="add"/>
+    </p>
+</form>
+    <input type="button" id="delectAll" value="删除选中"  class="btn"> 
+    <input type="button" value="年龄从小到大" id="ageSort"  class="btn"> 
+    <table id="tab1" width="100%" border="1">
+
+        <thead>
+        <tr>
+            <th>
+                <input id="checkAll" type="checkbox" /> 全选
+            </th>
+            <th>ID</th>
+            <th>姓名</th>
+            <th>年龄</th>
+            <th>性别</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+
+        <tbody>
+            <!-- <tr>
+                <td>
+                    <input type="checkbox"/>
+                </td>
+                <td>1</td>
+                <td>LEO</td>
+                <td>36</td>
+                <td>男</td>
+                <td>
+                    <a href="javascript:;">删除</a>
+                </td>
+            </tr> -->
+        </tbody>
+
+    </table>
+    <script type="text/javascript">
+        
+    /*
+        需求：
+            1. 先把已有的数据渲染在页面中
+            2. 点击添加，要添加新数据并且添加新结构
+            3. 全选单选
+            4. 点击删除，删除当前这个结构并且还要删除对应的数据
+            5. 批量删除 删除页面中的结构和数据
+            6. 按年龄排序
+
+        步骤：
+            1. 先把已有的数据渲染在页面中
+            2. 点击添加按钮
+                姓名和年龄不能为空
+                tbody中有新添加的数据的结构
+                    tr td
+                data中也要添加上新添加这条是数据
+                    {
+                        id
+                        ...
+                    }
+
+                判断是否点击过排序按钮
+                        点过，就要按照排序的方式
+                        没点过 追加
+
+            3. 全选单选
+                都要获取到元素
+
+            4. 删除
+                tbody.removeChild(tr);
+                删除数据
+                    通过id删除
+
+            6. 排序
+                    如果单条是选中的，排序后依然是选中的
+
+                    可以给每条数据添加上一个状态
+                            selected:true/false
+
+
+    */
+
+    //先把数据渲染在结构中
+    /*
+        {
+            'id' : 5,
+            'username' : '小美',
+            'age' : 40,
+            'sex' : '女'
+        }
+    */
+    
+
+
+
+
+
+
+    </script>
+</body>
+</html>

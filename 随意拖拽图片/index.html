@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			
+			.box{
+				width:1200px;
+				height:798px;
+				background: url("./images/bg.png");
+				margin:-20px auto;
+				overflow: hidden;
+			}
+			.con{
+				margin:234px 0 0 307px;
+			}
+			.left{
+				float:left;
+				margin:144px 33px 0 0;
+			}
+			.left input{
+				margin:0;
+				padding: 0;
+				width:96px;
+				height:38px;
+				border:2px #fff solid;
+				border-radius: 8px;
+				background:none;
+				font:20px/20px "微软雅黑";
+				color: #fff;
+				outline: none;
+			}
+			.right{
+				width:480px;
+				height:360px;
+				float: left;
+				position: relative;
+			}
+			img{
+				position: absolute;
+			}
+		</style>
+		<script src="./utils.js"></script>
+		<script>
+			window.onload = function (){
+				var btn = $("input")[0];
+				var right = $(".right")[0];
+				var img = $("img");
+				var n=12;
+				var arr4=[];
+				var arr=[];
+				var str="";
+				for(var i=0;i<n;i++){
+					str += `<img src="./images/${i+1}.png"/>`;
+					
+				}
+				right.innerHTML=str;
+				
+				for(var i=0;i<n;i++){
+					var a={};
+					var topa=parseInt(i/4)*120;
+					var left=i%4*120
+					a.top=topa;
+					a.left=left;
+					arr.push(a);
+					img[i].style.top =topa+"px";
+					img[i].style.left=left+"px";
+				}
+				var arr3=Array.from(img);
+				btn.onclick = function (){
+					arr3=arr3.sort(function (a,b){
+						return Math.random()-0.5;
+					})
+					for(var i=0;i<arr3.length;i++){
+						mTween(arr3[i],{top:arr[i].top,left:arr[i].left},500,"linear");
+					}
+				}
+				for(var i=0;i<img.length;i++){
+					;(function (i){
+						img[i].onmousedown = function (ev){
+						var disX=ev.clientX-img[i].offsetLeft;
+						var disY=ev.clientY-img[i].offsetTop;
+						var maxL=right.clientWidth-img[i].offsetWidth;
+						var maxT=right.clientHeight-img[i].offsetHeight;
+						right.onmousemove = function (ev){
+							var t=ev.clientY-disY;
+							var l=ev.clientX-disX;
+							if(t>maxT) t=maxT;
+							if(t<0) t=0;
+							if(l>maxL) l=maxL;
+							if(l<0) l=0;
+							img[i].style.top = t + "px";
+							img[i].style.left = l + "px";
+							document.onmouseup = function (){
+								arr4=[];
+								right.onmousemove =null;
+							for(var j=0;j<img.length;j++){
+								if(i==j){
+									continue;
+								}
+								if(collision(img[i],img[j])){
+									arr4.push(img[j])
+								}else{
+									var c=arr3.indexOf(img[i]);
+									mTween(img[i],{top:arr[c].top,left:arr[c].left},50)
+								}
+							}
+							var boxX =img[i].offsetLeft + img[i].offsetWidth/2;
+					var boxY = img[i].offsetTop + img[i].offsetHeight/2;
+
+					var min = 999999999;
+
+					var oDiv = null;
+
+					for( var j = 0; j < arr4.length; j++ ){
+						// 找碰上的元素的中心点坐标
+						var x = arr4[j].offsetLeft + arr4[j].offsetWidth/2;
+						var y = arr4[j].offsetTop + arr4[j].offsetHeight/2;
+
+						var chaX = x - boxX;
+						var chaY = y - boxY;
+
+						var xiebian = chaX * chaX + chaY*chaY;
+
+						if(min>=xiebian){
+							min = xiebian;
+							oDiv = arr4[j];console.log(arr4[j])
+						}
+
+					}
+					if(oDiv){
+						var a=arr3.indexOf(img[i]);
+						var b=arr3.indexOf(oDiv);
+						mTween(img[i],{top:arr[b].top,left:arr[b].left},50);
+						mTween(oDiv,{top:arr[a].top,left:arr[a].left},200,"linear",function (){
+							arr3[a]=[arr3[b],arr3[b]=arr3[a]][0];
+						})
+					}
+					}
+						}
+						ev.preventDefault();
+					}
+					})(i);
+					
+				}
+				function collision(obj1,obj2){
+				var obj1Rect = obj1.getBoundingClientRect();	
+				var obj2Rect = obj2.getBoundingClientRect();	
+
+				if(obj1Rect.right < obj2Rect.left || obj1Rect.bottom < obj2Rect.top || obj1Rect.left > obj2Rect.right || obj1Rect.top > obj2Rect.bottom){
+					return false;
+				}else{
+					return true;
+				}
+			}
+				console.log(arr)
+			}
+		</script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="con">
+				<div class="left">
+				<input type="button" value="随机" />
+			</div>
+			<div class="right">
+				<img src="./images/1.png" />
+			</div>
+			</div>
+			
+		</div>
+	</body>
+</html>
